@@ -4,10 +4,15 @@ import dotenv from "dotenv";
 import cors from "cors";
 import joi from "joi";
 import bcrypt from "bcrypt";
-import { v4 as uuid } from "uuid";
+import { v4 as uuidV4 } from "uuid";
 
 const signUpSchema = joi.object({
   name: joi.string().min(1).required(),
+  email: joi.string().email().required(),
+  password: joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+});
+
+const signInSchema = joi.object({
   email: joi.string().email().required(),
   password: joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
 });
@@ -54,6 +59,40 @@ app.post("/sign-up", async (req, res) => {
 
     await usersCollection.insertOne({ ...user, password: passwordHash });
     res.status(201).send("Usuário cadastrado com sucesso!");
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.post("/sign-in", async (req, res) => {
+  const { error } = signInSchema.validate(req.body, { abortEarly: false });
+  if (error) {
+    const arrErrors = error.details.map((e) => e.message);
+    return res.status(422).send(arrErrors);
+  }
+  const { email, password } = req.body;
+
+  try {
+    const user = await usersCollection.findOne({ email });
+    if (!user) {
+      return res.status(401).send({
+        message:
+          "Email não cadastrado, por favor verifique o email ou cadastre-se.",
+      });
+    }
+
+    if (bcrypt.compareSync(password, user.password)) {
+      const token = uuidV4();
+      await sessionsCollection.insertOne({
+        token,
+        userId: user._id,
+      });
+      res.status(200).send({ token });
+    } else {
+      res.status(401).send({
+        message: "Senha incorreta, verifique sua senha e tente novamente.",
+      });
+    }
   } catch (err) {
     res.status(500).send(err.message);
   }

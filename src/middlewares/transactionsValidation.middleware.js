@@ -1,3 +1,5 @@
+import { ObjectId, ObjectID } from "mongodb";
+import { transactionsCollection } from "../database/db.js";
 import { transactionSchema } from "../model/transictions.model.js";
 
 export function transactionsValidation(req, res, next) {
@@ -14,6 +16,22 @@ export function transactionsValidation(req, res, next) {
   }
   //transforma data para formato brasileiro
   transaction.date = transaction.date.split("/").reverse().join("/");
+
+  next();
+}
+
+export async function idTransactionExists(req, res, next) {
+  const id = req.params.id;
+  try {
+    const idIncludes = await transactionsCollection.findOne({
+      _id: new ObjectId(id),
+    });
+    if (!idIncludes) {
+      return res.status(404).send("Não há nenhuma mensagem com esse id");
+    }
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 
   next();
 }

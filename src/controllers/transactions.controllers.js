@@ -17,6 +17,7 @@ export async function postTransactions(req, res) {
 }
 
 export async function getTransactions(req, res) {
+  const user = res.locals.user;
   const userId = res.locals.user._id;
 
   try {
@@ -25,7 +26,7 @@ export async function getTransactions(req, res) {
       .sort({ date: -1 })
       .toArray();
 
-    res.status(200).send(arrTransactions);
+    res.status(200).send({ user, arrTransactions });
   } catch (err) {
     res.status(500).send(err.message);
   }

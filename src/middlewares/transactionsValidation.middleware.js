@@ -1,4 +1,4 @@
-import { ObjectId, ObjectID } from "mongodb";
+import { ObjectId } from "mongodb";
 import { transactionsCollection } from "../database/db.js";
 import { transactionSchema } from "../model/transictions.model.js";
 

@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { transactionsCollection } from "../database/db.js";
 
 export async function postTransactions(req, res) {
@@ -43,7 +44,11 @@ export async function putTransactions(req, res) {
 }
 
 export async function deleteTransactions(req, res) {
+  const id = req.params.id;
+
   try {
+    await transactionsCollection.deleteOne({ _id: new ObjectId(id) });
+    res.status(200).send("Transação apagada com sucesso!");
   } catch (err) {
     res.status(500).send(err.message);
   }

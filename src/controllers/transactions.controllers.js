@@ -9,6 +9,7 @@ export async function postTransactions(req, res) {
     await transactionsCollection.insertOne({
       ...transaction,
       userId,
+      value: Number(transaction.value),
     });
     res.status(201).send({ message: "Transação registrada com sucesso!" });
   } catch (err) {

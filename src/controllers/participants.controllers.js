@@ -53,7 +53,9 @@ export async function signInParticipants(req, res) {
         token,
         userId: user._id,
       });
-      res.status(200).send({ token });
+
+      delete user.password;
+      res.status(200).send({...user, token });
     } else {
       res.status(401).send({
         message: "Senha incorreta, verifique sua senha e tente novamente.",

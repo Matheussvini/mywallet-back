@@ -26,7 +26,7 @@ export async function getTransactions(req, res) {
       .sort({ date: -1 })
       .toArray();
 
-    res.status(200).send({ user, arrTransactions });
+    res.status(200).send(arrTransactions);
   } catch (err) {
     res.status(500).send(err.message);
   }

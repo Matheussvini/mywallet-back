@@ -4,8 +4,6 @@ import { transactionSchema } from "../model/transictions.model.js";
 
 export function transactionsValidation(req, res, next) {
   const transaction = req.body;
-  //transforma data para formato americano
-  transaction.date = transaction.date.split("/").reverse().join("/");
 
   const { error } = transactionSchema.validate(transaction, {
     abortEarly: false,
@@ -15,8 +13,7 @@ export function transactionsValidation(req, res, next) {
     return res.status(422).send(arrErrors);
   }
   //transforma data para formato brasileiro
-  transaction.date = transaction.date.split("/").reverse().join("/");
-
+  transaction.date = transaction.date.split("-").reverse().join("/");
   next();
 }
 

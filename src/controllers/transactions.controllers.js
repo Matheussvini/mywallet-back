@@ -35,10 +35,10 @@ export async function getTransactions(req, res) {
 
 export async function putTransactions(req, res) {
   const transaction = req.body;
-  const userId = res.locals.user._id;
+  const transactionId = res.params.id;
 
   try {
-    await transactionsCollection.updateOne({ userId }, { $set: transaction });
+    await transactionsCollection.updateOne({ transactionId }, { $set: transaction });
     res.status(201).send({ message: "Transação editada com sucesso!" });
   } catch (err) {
     res.status(500).send(err.message);
